@@ -131,6 +131,17 @@ int main(void)
 		printf("\truntime\t\t\t: %.1lf\n",cpu_time_used);
 		printf("\textra memory allocated\t: %d\n",extraMemoryAllocated);
 		printArray(pDataCopy, dataSz);
+
+                printf("Heap Sort:\n");
+		memcpy(pDataCopy, pDataSrc, dataSz*sizeof(int));
+		extraMemoryAllocated = 0;
+		start = clock();
+		heapSort(pDataCopy, 0, dataSz - 1);
+		end = clock();
+		cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+		printf("\truntime\t\t\t: %.1lf\n",cpu_time_used);
+		printf("\textra memory allocated\t: %d\n",extraMemoryAllocated);
+		printArray(pDataCopy, dataSz);
 		
 		free(pDataCopy);
 		free(pDataSrc);
