@@ -4,6 +4,34 @@
 
 int extraMemoryAllocated;
 
+void *Alloc(size_t sz)
+{
+	extraMemoryAllocated += sz;
+	size_t* ret = malloc(sizeof(size_t) + sz);
+	*ret = sz;
+	printf("Extra memory allocated, size: %ld\n", sz);
+	return &ret[1];
+}
+
+void DeAlloc(void* ptr)
+{
+	size_t* pSz = (size_t*)ptr - 1;
+	extraMemoryAllocated -= *pSz;
+	printf("Extra memory deallocated, size: %ld\n", *pSz);
+	free((size_t*)ptr - 1);
+}
+
+size_t Size(void* ptr)
+{
+	return ((size_t*)ptr)[-1];
+}
+
+// implements heap sort
+// extraMemoryAllocated counts bytes of memory allocated
+void heapSort(int arr[], int n)
+{
+}
+
 // implement merge sort
 // extraMemoryAllocated counts bytes of extra memory allocated
 void mergeSort(int pData[], int l, int r)
@@ -42,7 +70,7 @@ int parseData(char *inputFileName, int **ppData)
 	if (inFile)
 	{
 		fscanf(inFile,"%d\n",&dataSz);
-		*ppData = (int *)malloc(sizeof(int) * dataSz);
+		*ppData = (int *)Alloc(sizeof(int) * dataSz);
 		// Implement parse data block
 	}
 	
@@ -82,7 +110,7 @@ int main(void)
 		if (dataSz <= 0)
 			continue;
 		
-		pDataCopy = (int *)malloc(sizeof(int)*dataSz);
+		pDataCopy = (int *)Alloc(sizeof(int)*dataSz);
 	
 		printf("---------------------------\n");
 		printf("Dataset Size : %d\n",dataSz);
@@ -143,8 +171,8 @@ int main(void)
 		printf("\textra memory allocated\t: %d\n",extraMemoryAllocated);
 		printArray(pDataCopy, dataSz);
 		
-		free(pDataCopy);
-		free(pDataSrc);
+		DeAlloc(pDataCopy);
+		DeAlloc(pDataSrc);
 	}
 	
 }
