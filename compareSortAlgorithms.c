@@ -1,6 +1,7 @@
 #include <time.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 int extraMemoryAllocated;
 
@@ -28,14 +29,30 @@ size_t Size(void* ptr)
 
 // implements heap sort
 // extraMemoryAllocated counts bytes of memory allocated
-void heapSort(int arr[], int n)
+void heapSort(int arr[], int n) 
 {
+	int i, temp;
+	build_max_heap(arr, n);
+	for (i=n; i>0; i--) {
+		temp = arr[i];
+		arr[0] = temp;
+		n--;
+		max_heapify(arr, 0, n);
+
+	}
+	
+	
 }
 
 // implement merge sort
 // extraMemoryAllocated counts bytes of extra memory allocated
 void mergeSort(int pData[], int l, int r)
 {
+	if (l < r) {
+		int m = (l+r)/2;
+		mergeSort(pData, l, m);
+		mergeSort(pData, m+l, r);
+	}
 	
 }
 
@@ -43,6 +60,16 @@ void mergeSort(int pData[], int l, int r)
 // extraMemoryAllocated counts bytes of memory allocated
 void insertionSort(int* pData, int n)
 {
+	int i, j, item;
+	for (i = 1; i < n; i++) {
+		item = pData[i];
+		j = i - 1;
+		while (j >= 0 && pData[j] > item) {
+			pData[j + 1] = pData[j];
+			j = j - 1;
+		}
+		pData[j + 1] = item;
+	}
 	
 }
 
@@ -50,13 +77,33 @@ void insertionSort(int* pData, int n)
 // extraMemoryAllocated counts bytes of extra memory allocated
 void bubbleSort(int* pData, int n)
 {
-	
+	int i, j, temp;
+	for (i = 0; i < n-1; i++) 
+		for (j = 0; j < n-1-1; j++) 
+			if (pData[j] > pData[j + 1]) {
+				temp = pData[j];
+				pData[j] = pData[j+ 1];
+				pData[j + 1] = temp; 
+
+
+			}
 }
+
 
 // implement selection sort
 // extraMemoryAllocated counts bytes of extra memory allocated
 void selectionSort(int* pData, int n)
 {
+	int i, j, min_idx, temp; 
+	for (i = 0; i < n-1; i++) {
+		min_idx = i;
+		for (j = i+1; j < n; j++)
+		if (pData[j] < pData[min_idx])
+		min_idx = j;
+		temp = pData[min_idx];
+		pData[min_idx] = pData[i];
+		pData[i] = temp;
+	}
 	
 }
 
@@ -71,9 +118,14 @@ int parseData(char *inputFileName, int **ppData)
 	{
 		fscanf(inFile,"%d\n",&dataSz);
 		*ppData = (int *)Alloc(sizeof(int) * dataSz);
+		if (*ppData) {
+			for (int i = 0; i < dataSz; ++i){
+				fscanf(inFile, "%d\n",&((*ppData)[i]));
+			}
+		}
 		// Implement parse data block
 	}
-	
+	fclose(inFile);
 	return dataSz;
 }
 
@@ -164,7 +216,7 @@ int main(void)
 		memcpy(pDataCopy, pDataSrc, dataSz*sizeof(int));
 		extraMemoryAllocated = 0;
 		start = clock();
-		heapSort(pDataCopy, 0, dataSz - 1);
+		// heapSort(pDataCopy, 0, dataSz - 1);
 		end = clock();
 		cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
 		printf("\truntime\t\t\t: %.1lf\n",cpu_time_used);
